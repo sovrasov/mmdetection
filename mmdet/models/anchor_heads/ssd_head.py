@@ -26,7 +26,8 @@ class SSDHead(AnchorHead):
                  target_means=(.0, .0, .0, .0),
                  target_stds=(1.0, 1.0, 1.0, 1.0),
                  loss_balancing=False,
-                 depthwise_heads=False):
+                 lite_heads=False,
+                 lite_activation_type='relu6'):
         super(AnchorHead, self).__init__()
         self.input_size = input_size
         self.num_classes = num_classes
@@ -40,19 +41,24 @@ class SSDHead(AnchorHead):
         reg_convs = []
         cls_convs = []
         for i in range(len(in_channels)):
-            if depthwise_heads:
+            if lite_heads:
+                assert lite_activation_type in ['relu', 'relu6']
+                if lite_activation_type in 'relu':
+                    activation_class = nn.ReLU
+                else:
+                    activation_class = nn.ReLU6
                 reg_conv = nn.Sequential(
                     nn.Conv2d(in_channels[i], in_channels[i],
                               kernel_size=3, padding=1, groups=in_channels[i]),
                     nn.BatchNorm2d(in_channels[i]),
-                    nn.ReLU6(inplace=True),
+                    activation_class(inplace=True),
                     nn.Conv2d(in_channels[i], num_anchors[i] * 4,
                               kernel_size=1, padding=0))
                 cls_conv = nn.Sequential(
                     nn.Conv2d(in_channels[i], in_channels[i],
                               kernel_size=3, padding=1, groups=in_channels[i]),
                     nn.BatchNorm2d(in_channels[i]),
-                    nn.ReLU6(inplace=True),
+                    activation_class(inplace=True),
                     nn.Conv2d(in_channels[i], num_anchors[i] * num_classes,
                               kernel_size=1, padding=0))
             else:

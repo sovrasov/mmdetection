@@ -19,7 +19,8 @@ model = dict(
         anchor_ratios=([2], [2, 3], [2, 3], [2, 3], [2], [2]),
         target_means=(.0, .0, .0, .0),
         target_stds=(0.1, 0.1, 0.2, 0.2),
-        depthwise_heads=True)
+        lite_heads=True,
+        lite_activation_type='relu6')
         )
 cudnn_benchmark = True
 train_cfg = dict(
@@ -50,7 +51,7 @@ data = dict(
     workers_per_gpu=3,
     train=dict(
         type='RepeatDataset',
-        times=1,
+        times=5,
         dataset=dict(
             type=dataset_type,
             ann_file=data_root + 'annotations/instances_train2017.json',
@@ -90,8 +91,8 @@ data = dict(
         resize_keep_ratio=False),
     test=dict(
         type=dataset_type,
-        ann_file=data_root + 'annotations/image_info_test-dev2017.json',
-        img_prefix=data_root + 'test2017/',
+        ann_file=data_root + 'annotations/instances_val2017.json',
+        img_prefix=data_root + 'val2017/',
         img_scale=(300, 300),
         img_norm_cfg=img_norm_cfg,
         size_divisor=None,
@@ -102,7 +103,7 @@ data = dict(
         resize_keep_ratio=False))
 # optimizer
 optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=5e-4)
-optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
+optimizer_config = dict()
 # learning policy
 lr_config = dict(
     policy='step',
@@ -120,7 +121,7 @@ log_config = dict(
     ])
 # yapf:enable
 # runtime settings
-total_epochs = 25
+total_epochs = 24
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/ssd300_mobilenet_v2_coco'
