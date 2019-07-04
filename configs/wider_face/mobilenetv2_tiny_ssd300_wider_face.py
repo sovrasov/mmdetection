@@ -11,7 +11,7 @@ model = dict(
         input_size=input_size,
         width_mult=width_mult,
         activation_type='relu',
-        single_scale=True
+        scales=1
         ),
     neck=None,
     bbox_head=dict(

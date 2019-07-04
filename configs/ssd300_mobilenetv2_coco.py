@@ -7,6 +7,7 @@ model = dict(
         type='SSDMobilenetV2',
         input_size=input_size,
         activation_type='relu6'
+        scales=6
         ),
     neck=None,
     bbox_head=dict(

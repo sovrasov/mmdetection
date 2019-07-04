@@ -88,10 +88,10 @@ class InvertedResidual(nn.Module):
 class SSDMobilenetV2(nn.Module):
     def __init__(self, input_size, width_mult=1.0,
                  activation_type='relu',
-                 single_scale=False):
+                 scales=6):
         super(SSDMobilenetV2, self).__init__()
         self.input_size = input_size
-        self.single_scale = single_scale
+        self.single_scale = scales == 1
         self.width_mult = width_mult
         block = InvertedResidual
         input_channel = 32
@@ -148,30 +148,20 @@ class SSDMobilenetV2(nn.Module):
         if not self.single_scale:
             self.extra_convs.append(conv_1x1_bn(last_channel, 1280,
                                                 act_fn=self.activation_class))
-            self.extra_convs.append(conv_1x1_bn(1280, 256,
+            last_channel = 1280
+            features_map_sizes = [512, 256, 256, 128]
+
+            for i in range(scales - 2):
+                fms = features_map_sizes[i]
+                self.extra_convs.append(conv_1x1_bn(last_channel, int(fms / 2),
+                                                    act_fn=self.activation_class))
+                self.extra_convs.append(conv_bn(int(fms / 2), int(fms / 2),
+                                                2, groups=int(fms / 2),
                                                 act_fn=self.activation_class))
-            self.extra_convs.append(conv_bn(256, 256, 2, groups=256,
-                                            act_fn=self.activation_class))
-            self.extra_convs.append(conv_1x1_bn(256, 512, groups=1,
-                                                act_fn=self.activation_class))
-            self.extra_convs.append(conv_1x1_bn(512, 128,
-                                                act_fn=self.activation_class))
-            self.extra_convs.append(conv_bn(128, 128, 2, groups=128,
-                                            act_fn=self.activation_class))
-            self.extra_convs.append(conv_1x1_bn(128, 256,
-                                                act_fn=self.activation_class))
-            self.extra_convs.append(conv_1x1_bn(256, 128,
-                                                act_fn=self.activation_class))
-            self.extra_convs.append(conv_bn(128, 128, 2, groups=128,
-                                            act_fn=self.activation_class))
-            self.extra_convs.append(conv_1x1_bn(128, 256,
-                                                act_fn=self.activation_class))
-            self.extra_convs.append(conv_1x1_bn(256, 64,
-                                                act_fn=self.activation_class))
-            self.extra_convs.append(conv_bn(64, 64, 2, groups=64,
-                                            act_fn=self.activation_class))
-            self.extra_convs.append(conv_1x1_bn(64, 128,
-                                                act_fn=self.activation_class))
+                self.extra_convs.append(conv_1x1_bn(int(fms / 2), fms,
+                                                    act_fn=self.activation_class))
+                last_channel = fms
+
             self.extra_convs = nn.Sequential(*self.extra_convs)
 
     @property
