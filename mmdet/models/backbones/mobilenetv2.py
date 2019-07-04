@@ -60,8 +60,6 @@ class InvertedResidual(nn.Module):
             ]
         self.ssd_output = ssd_output
         if self.ssd_output:
-            self.output_conv = conv_1x1_bn(hidden_dim, hidden_dim, 1,
-                                           activation)
             self.conv1 = nn.Sequential(*self.conv[0:3])
             self.conv2 = nn.Sequential(*self.conv[3:])
         else:
@@ -71,7 +69,7 @@ class InvertedResidual(nn.Module):
         if not self.ssd_output:
             return self.conv(x)
 
-        expanded_x = self.output_conv(self.conv1(x))
+        expanded_x = self.conv1(x)
         return (expanded_x, self.conv2(expanded_x))
 
     def forward(self, x):
