@@ -16,6 +16,7 @@ import logging
 import tempfile
 import types
 
+import torch
 import torch.nn as nn
 from pytorchcv.model_provider import _models
 from torch.nn.modules.batchnorm import _BatchNorm
@@ -53,6 +54,7 @@ def generate_backbones():
             def init_weights(self, pretrained=None):
                 if pretrained is None:
                     return
+                print(f'Loaded: {pretrained}')
                 from collections import OrderedDict
                 source_state = torch.load(pretrained)
                 if 'state_dict' in source_state:
