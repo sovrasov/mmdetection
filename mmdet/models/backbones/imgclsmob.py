@@ -50,8 +50,25 @@ def generate_backbones():
 
                 return outputs
 
-            def init_weights(self, pretrained=True):
-                pass
+            def init_weights(self, pretrained=None):
+                if pretrained is None:
+                    return
+                from collections import OrderedDict
+                source_state = torch.load(pretrained)
+                if 'state_dict' in source_state:
+                    source_state = source_state['state_dict']
+                if 'model' in source_state:
+                    source_state = source_state['model']
+                target_state = OrderedDict()
+                for k, v in source_state.items():
+                    if k.startswith('module.attacker.model.'):
+                        k = k[len('module.attacker.model.'):]
+                    else:
+                        continue
+                    if k[:7] != 'module.':
+                        k = 'module.' + k
+                    target_state[k] = v
+                self.load_state_dict(target_state, strict=True)
 
             def train(self, mode=True):
                 super(self.__class__, self).train(mode)
