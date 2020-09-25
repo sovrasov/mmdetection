@@ -67,8 +67,8 @@ def generate_backbones():
                         k = k[len('module.attacker.model.'):]
                     else:
                         continue
-                    if k[:7] != 'module.':
-                        k = 'module.' + k
+                    #if k[:7] != 'module.':
+                    #    k = 'module.' + k
                     target_state[k] = v
                 self.load_state_dict(target_state, strict=True)
 
