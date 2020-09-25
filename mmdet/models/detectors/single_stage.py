@@ -34,7 +34,8 @@ class SingleStageDetector(BaseDetector):
         self.init_weights(pretrained=pretrained)
 
     def init_weights(self, pretrained=None):
-        super(SingleStageDetector, self).init_weights(pretrained)
+        #super(SingleStageDetector, self).init_weights(pretrained)
+        super(SingleStageDetector, self).init_weights(None)
         self.backbone.init_weights(pretrained=pretrained)
         if self.with_neck:
             if isinstance(self.neck, nn.Sequential):
