@@ -63,12 +63,12 @@ def generate_backbones():
                     source_state = source_state['model']
                 target_state = OrderedDict()
                 for k, v in source_state.items():
-                    if k.startswith('module.attacker.model.'):
-                        k = k[len('module.attacker.model.'):]
-                    else:
-                        continue
-                    #if k[:7] != 'module.':
-                    #    k = 'module.' + k
+                    #if k.startswith('module.attacker.model.'):
+                    #    k = k[len('module.attacker.model.'):]
+                    #else:
+                    #    continue
+                    if k.startswith('module.'):
+                        k = k[len('module.'):]
                     target_state[k] = v
                 self.load_state_dict(target_state, strict=True)
 
