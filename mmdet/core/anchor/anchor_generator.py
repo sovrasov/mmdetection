@@ -309,10 +309,10 @@ class SSDAnchorGenerator(AnchorGenerator):
         min_ratio, max_ratio = basesize_ratio_range
         min_ratio = int(min_ratio * 100)
         max_ratio = int(max_ratio * 100)
-        step = int(np.floor(max_ratio - min_ratio) / (self.num_levels - 2))
+        step = int(np.floor(max_ratio - min_ratio))# / (self.num_levels))
         min_sizes = []
         max_sizes = []
-        for ratio in range(int(min_ratio), int(max_ratio) + 1, step):
+        for ratio in range(int(min_ratio), int(max_ratio) , step):
             min_sizes.append(int(self.input_size * ratio / 100))
             max_sizes.append(int(self.input_size * (ratio + step) / 100))
         if self.input_size == 300:
@@ -367,6 +367,7 @@ class SSDAnchorGenerator(AnchorGenerator):
                 scales=self.scales[i],
                 ratios=self.ratios[i],
                 center=self.centers[i])
+            print(base_anchors)
             indices = list(range(len(self.ratios[i])))
             indices.insert(1, len(indices))
             base_anchors = torch.index_select(base_anchors, 0,
